@@ -1,0 +1,57 @@
+#!/bin/bash -e
+
+test -e dist && rm -r dist || true
+mkdir dist
+
+test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
+
+grep -hv '^\s*import ' util.js objects.js game.js |
+sed -r "s/\blog\(/$LOG_FN(/g" |
+terser --compress \
+       --mangle toplevel \
+       --output dist/app.js \
+       --source-map includeSources,url=app.js.map \
+
+cat index.html |
+while read line; do
+  if (echo "$line" | grep -q '<link rel="stylesheet".*'); then
+    echo ">> Building CSS..." >&2
+    echo '<style>'
+    cat game.css | minify --css
+    echo '</style>'
+  # elif (echo "$line" | grep -q '<script.*</script>'); then
+  #   echo ">> Building JS..." >&2
+  #   echo '<script type="module">'
+  #   egrep -v '^//#' dist/app.min.js
+  #   #cat dist/app.min.js | sed 's/;/;\n/g'
+  #   #echo -e '\n//# sourceURL=app.min.js</script>'
+  #   echo -e '</script>'
+  else
+    echo "$line" | sed 's/game.js/app.js/'
+  fi
+done > dist/index.html
+
+#rm dist/app.min.js
+
+du -sh dist
+
+echo ">> Packing..." >&2
+
+ZIP_PACK="/tmp/${npm_package_name}_$(date +%F_%T).zip"
+
+cd dist
+zip -9 -r "$ZIP_PACK" *
+cd ..
+
+zip_size=$(du -b "$ZIP_PACK" | sed 's/\t.*//')
+
+max=$((13*1024))
+pct="$(echo "scale=2; 100*$zip_size/$max" | bc -l)%"
+
+if [ $zip_size -le $max ]; then
+  echo -e "\e[32m>> The game pakage is in the limt. $ZIP_PACK $pct\e[0m"
+  exit 0
+else
+  echo -e "\e[31m>> The game pakage over the limt. $ZIP_PACK $pct\e[0m"
+  exit 1
+fi
