@@ -3,6 +3,7 @@ export function mkEl(tag, attrs, parent) {
     document.createElement(tag),
     attrs
   )
+  el.textContent = attrs.txt
   if (parent) parent.appendChild(el)
   return el
 }

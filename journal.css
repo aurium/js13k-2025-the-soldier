@@ -1,0 +1,38 @@
+.news {
+  position: absolute;
+  top: 5vh;
+  left: 10vw;
+  width: 32vw;
+  max-height: 90vh;
+  padding: 2em;
+  background: #C8C0B0;
+  color: #433;
+  font-family: serif;
+  overflow: auto;
+  z-index: 10;
+  box-shadow: .5em .5em 2em rgba(0,0,0,.8);
+  h2 {
+    font-size: 2.5em;
+    margin: 0;
+  }
+  > header {
+    height: 15em;
+    margin: 1em 0;
+    > header {
+      position: relative;
+      background-color: #888;
+      width: calc(60vw - 4em);
+      height: 30em;
+      overflow: hidden;
+      transform: scale(.5) translate(-28em,-15em);
+      filter: sepia(.5);
+      #canvas {
+      }
+    }
+  }
+  p {
+    white-space: pre-wrap;
+    font-size: 1.6em;
+    text-align: justify;
+  }
+}

@@ -3,7 +3,9 @@ export const objects = []
 export function mkPerson(x, y, opts={}) {
   opts.rnd ??= []
   opts.rndC ??= []
+  opts.id ??= 'o' + String(Math.random()).split('.')[1]
   const p = mkEl('p', {
+    id: opts.id,
     className:
       `person ${opts.we?'we':'they'} ${opts.fem&&'fem'} ${opts.child&&'child'} ` +
       Array(9).fill(0).map((_,i)=>`rnd${i}-` + (opts.rndC[i] ?? Math.floor(Math.random()*6))).join(' '),
@@ -32,7 +34,7 @@ export function mkPerson(x, y, opts={}) {
       p.style.bottom = this.y+'em'
       const child = opts.child ? `translate(-.6em,1.2em) scale(.666,.5)` : ''
       p.style.transform = `${child} scaleX(${this.turn})`
-      p.style.zIndex = Math.round(1000-this.y)
+      p.style.zIndex = Math.round(2000-this.y)
     },
     get isOld() { return opts.rndC[2] == 5 && opts.rnd[7] > .6 }
   }, opts)

@@ -4,6 +4,7 @@ body {
   background: #111;
   color: #EEE;
   font-family: sans-serif;
+  font-size: 1vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -12,17 +13,19 @@ body {
   overflow: hidden;
   * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 }
 
 #canvas-box {
   width: 100vw;
   height: 40vw;
-  font-size: 1vw;
   background: #47A;
   position: relative;
   cursor: none; /* cursor: cell */
   overflow: hidden;
+  z-index: 2;
 }
 
 :where(#canvas) {
@@ -63,7 +66,8 @@ body {
   background: #000;
   opacity: .8;
   margin: 0 0 -2em -.1em;
-  z-index: 9999;
+  z-index: 9000;
+  .news & { display: none /* remove target from newspaper */ }
   &::before {
     content: "";
     position: absolute;
@@ -119,6 +123,9 @@ body {
       left: 2.2em;
       bottom: 1.2em;
       animation: calc(4s + 2s * var(--rnd3)) calc(4s * var(--rnd3)) linear infinite blink;
+    }
+    .news &::before {
+      animation: none; /* remove blink on newspaper */
     }
     .child &::before { /* child eye */
       height: .9em;
@@ -216,5 +223,9 @@ body {
     a { animation: .8s linear infinite arm-walk }
     f { animation: .4s linear infinite leg-walk }
     f::before { animation: .4s .2s linear infinite leg-walk }
+    .news & { /* Stop walk animation on the newspaper */
+      a { animation: 9999s linear infinite arm-walk }
+      f, f::before { animation: none }
+    }
   }
 }

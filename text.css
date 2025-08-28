@@ -1,0 +1,24 @@
+.speak {
+  display: block;
+  background: #FFF;
+  color: #111;
+  white-space: pre;
+  padding: .5em 1em;
+  z-index: 8000;
+  .news & { display: none /* hide it inside newspaper */ }
+  > p {
+    position: static;
+    display: block;
+    font-size: 1.5rem;
+  }
+  &::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border: .6em solid transparent;
+    border-top: 2em solid #FFF;
+    position: absolute;
+    left: 3em;
+    bottom: -2.3em;
+  }
+}

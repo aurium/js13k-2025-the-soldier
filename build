@@ -5,7 +5,8 @@ mkdir dist
 
 test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 
-grep -hv '^\s*import ' util.js objects.js game.js |
+grep -hv '^\s*import ' util.js base.js text.js journal.js objects.js game.js |
+sed -r 's/^\s*export //' |
 sed -r "s/\blog\(/$LOG_FN(/g" |
 terser --compress \
        --mangle toplevel \
@@ -17,7 +18,7 @@ while read line; do
   if (echo "$line" | grep -q '<link rel="stylesheet".*'); then
     echo ">> Building CSS..." >&2
     echo '<style>'
-    cat game.css | minify --css
+    cat text.css journal.css game.css | minify --css
     echo '</style>'
   # elif (echo "$line" | grep -q '<script.*</script>'); then
   #   echo ">> Building JS..." >&2
@@ -40,8 +41,10 @@ echo ">> Packing..." >&2
 ZIP_PACK="/tmp/${npm_package_name}_$(date +%F_%T).zip"
 
 cd dist
+mv app.js.map ../
 zip -9 -r "$ZIP_PACK" *
 cd ..
+mv app.js.map dist/
 
 zip_size=$(du -b "$ZIP_PACK" | sed 's/\t.*//')
 

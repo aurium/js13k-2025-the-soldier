@@ -1,12 +1,11 @@
 import { mkEl } from './util.js'
+import { body, canvas, updateCam, getGunTarget } from './base.js'
 import { objects, mkPerson } from './objects.js'
-
-const body = document.body
+import { speak } from './text.js'
+import { mkNews } from './journal.js'
 
 let mousePageX, mousePageY
 let winW, winH, canvasTop, canvasH, em
-let camX=0, camY=0, targetX, targetY=99
-let centerX = 50, centerY = 18
 
 const fpsEl = mkEl('code', { style: 'position:absolute; bottom:.5em' }, body)
 
@@ -20,13 +19,6 @@ function updateWinSize() {
 window.addEventListener('resize', updateWinSize)
 updateWinSize()
 
-const canvas = mkEl(
-  'div',
-  { id: 'canvas' },
-  mkEl('div', { id: 'canvas-box' }, body)
-)
-const target = mkEl('div', { id: 'target' }, canvas)
-
 const player = mkPerson(0,0, {
   we: 1, //child: 1,
   rnd:[.8, .85, .35, 0, 0, 0],
@@ -38,11 +30,13 @@ mkPerson(0,0, {
   rndC: Array(9).fill(0)
 })
 
-mkPerson(5,0, {
+const testP = mkPerson(15,0, {
   we: 1,
   rnd:[.5,.1,.2,.3,.4,.5,.6, .6], // rnd[7] > .6 means White Hair
   rndC: [1,1,5] // rndC[2] == 5 means Old Person
 })
+
+speak(testP, 'This is a test.\nDid you like that?')
 
 for (let x = -37; x <= 38; x+=5) for (let y = -10; y <= 14; y+=7) {
   mkPerson(x, y, {
@@ -65,6 +59,7 @@ setInterval(()=> {
     fpsEl.textContent = 'FPS: '+(10000 / (Date.now() - lastTicCheckpoint)).toFixed(1)
     lastTicCheckpoint = Date.now()
   }
+  player.turn = (getGunTarget().x < (player.x+1.5)) ? -1 : 1
   player.vx = (keyLeft ? -1 : keyRight ? 1 : 0) * playerVelocity
   player.vy = (keyDown ? -1 : keyUp ? 1 : 0) * playerVelocity
   if (player.vx && player.vy) {
@@ -76,32 +71,16 @@ setInterval(()=> {
   for(const obj of objects) {
     obj.update()
   }
-  updateCam()
+  updateCam(player)
 }, 33)
 
-function updateCam() {
-  const m = 40
-  moveCam(
-    (camX*m + player.x)/(m+1) + player.vx*2,
-    (camY*m + player.y)/(m+1) + player.vy*1.2
-  )
-}
+// setTimeout(()=> {
+//   mkNews(player, 'Some hard strong tilte', `
+//     This is the news body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae ante consequat, cursus tellus ac, ultrices nibh.
 
-function moveCam(x, y) {
-  camX = x
-  camY = y
-  canvas.style.left = (centerX-camX)+'em'
-  canvas.style.bottom = (centerY-camY)+'em'
-  updateTarget()
-}
-
-function updateTarget() {
-  targetX = (mousePageX / em) - centerX + camX
-  targetY = -((mousePageY - canvasTop - canvasH) / em) - centerY + camY
-  target.style.left = targetX+'em'
-  target.style.bottom = targetY+'em'
-  player.turn = (targetX < (player.x+1.5)) ? -1 : 1
-}
+//     Suspendisse vel semper est, in mattis nibh. Ut in augue ante. Duis eleifend pellentesque purus. Integer aliquam faucibus magna, id suscipit ligula elementum quis. Proin tristique dictum quam, ac porttitor nibh lobortis id. Nullam vitae facilisis sem, id rutrum metus. Curabitur vel turpis non quam pharetra vehicula.
+//   `)
+// }, 3000)
 
 function updateKeypressed(key, toggle) {
   key = key.toLowerCase()
@@ -109,14 +88,14 @@ function updateKeypressed(key, toggle) {
   if (key == 'arrowright' || key == 'd') keyRight = toggle
   if (key == 'arrowup'    || key == 'w')    keyUp = toggle
   if (key == 'arrowdown'  || key == 's')  keyDown = toggle
+  console.log(key==' ')
+  if (toggle && key == ' ') mkNews(player, 'Some hard strong title', `
+    This is the news body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae ante consequat, cursus tellus ac, ultrices nibh.
+
+    Suspendisse vel semper est, in mattis nibh. Ut in augue ante. Duis eleifend pellentesque purus. Integer aliquam faucibus magna, id suscipit ligula elementum quis. Proin tristique dictum quam, ac porttitor nibh lobortis id. Nullam vitae facilisis sem, id rutrum metus. Curabitur vel turpis non quam pharetra vehicula.
+  `)
 }
 
 body.addEventListener('keydown', ev => updateKeypressed(ev.key, 1))
 
 body.addEventListener('keyup', ev => updateKeypressed(ev.key, 0))
-
-body.addEventListener('pointermove', ev => {
-  mousePageX = ev.pageX
-  mousePageY = ev.pageY
-  updateTarget()
-})
