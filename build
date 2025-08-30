@@ -5,9 +5,12 @@ mkdir dist
 
 test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 
-grep -hv '^\s*import ' util.js base.js text.js journal.js objects.js game.js |
-sed -r 's/^\s*export //' |
-sed -r "s/\blog\(/$LOG_FN(/g" |
+(
+  echo 'const G = window'
+  grep -hv '^\s*import ' util.js base.js text.js journal.js objects.js game.js |
+  sed -r 's/^\s*export //; s/window\./G./g' |
+  sed -r "s/\blog\(/$LOG_FN(/g"
+) |
 terser --compress \
        --mangle toplevel \
        --output dist/app.js \

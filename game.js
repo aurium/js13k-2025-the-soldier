@@ -5,7 +5,7 @@ import { speak } from './text.js'
 import { mkNews } from './journal.js'
 
 let mousePageX, mousePageY
-let winW, winH, canvasTop, canvasH, em
+let winW, winH, canvasTop, canvasH
 
 const fpsEl = mkEl('code', { style: 'position:absolute; bottom:.5em' }, body)
 
@@ -14,7 +14,7 @@ function updateWinSize() {
   winH = body.clientHeight
   canvasH = winW * .4
   canvasTop = (winH - canvasH) / 2
-  em = winW / 100
+  window.em = winW / 100
 }
 window.addEventListener('resize', updateWinSize)
 updateWinSize()
@@ -24,15 +24,15 @@ const player = mkPerson(0,0, {
   rnd:[.8, .85, .35, 0, 0, 0],
   rndC: Array(9).fill(0)
 })
-mkPerson(0,0, {
-  we: 1, child: 1,
-  rnd:[.8, .85, .35, 0, 0, 0],
-  rndC: Array(9).fill(0)
-})
+// mkPerson(0,0, {
+//   we: 1, child: 1,
+//   rnd:[.8, .85, .35, 0, 0, 0],
+//   rndC: Array(9).fill(0)
+// })
 
-const testP = mkPerson(15,0, {
-  we: 1,
-  rnd:[.5,.1,.2,.3,.4,.5,.6, .6], // rnd[7] > .6 means White Hair
+const testP = mkPerson(15, 0, {
+  we: 1, turn: -1,
+  rnd: [.5,.1,.2,.3,.4,.5,.6, .6], // rnd[7] > .6 means White Hair
   rndC: [1,1,5] // rndC[2] == 5 means Old Person
 })
 

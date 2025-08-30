@@ -1,6 +1,7 @@
 import { mkEl } from './util.js'
 
-let camX=0, camY=0
+window.camX=0
+window.camY=0
 export const centerX = 50, centerY = 18
 let gunTargetX, gunTargetY=99
 
@@ -15,24 +16,24 @@ export const canvas = mkEl(
 export function updateCam(objTarget) {
   const m = 40
   moveCam(
-    (camX*m + objTarget.x)/(m+1) + player.vx*2,
-    (camY*m + objTarget.y)/(m+1) + player.vy*1.2
+    (window.camX*m + objTarget.x)/(m+1) + player.vx*2,
+    (window.camY*m + objTarget.y)/(m+1) + player.vy*1.2
   )
 }
 
 function moveCam(x, y) {
-  camX = x
-  camY = y
-  canvas.style.left = (centerX-camX)+'em'
-  canvas.style.bottom = (centerY-camY)+'em'
+  window.camX = x
+  window.camY = y
+  canvas.style.left = (centerX-window.camX)+'em'
+  canvas.style.bottom = (centerY-window.camY)+'em'
   updateTarget()
 }
 
 const gunTarget = mkEl('div', { id: 'target' }, canvas)
 
 function updateTarget() {
-  gunTargetX = (mousePageX / em) - centerX + camX
-  gunTargetY = -((mousePageY - canvasTop - canvasH) / em) - centerY + camY
+  gunTargetX = (mousePageX / em) - centerX + window.camX
+  gunTargetY = -((mousePageY - canvasTop - canvasH) / em) - centerY + window.camY
   gunTarget.style.left = gunTargetX+'em'
   gunTarget.style.bottom = gunTargetY+'em'
 }

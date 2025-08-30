@@ -67,6 +67,7 @@ body {
   opacity: .8;
   margin: 0 0 -2em -.1em;
   z-index: 9000;
+  pointer-events: none;
   .news & { display: none /* remove target from newspaper */ }
   &::before {
     content: "";
