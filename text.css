@@ -18,7 +18,7 @@
     border: .6em solid transparent;
     border-top: 2em solid #FFF;
     position: absolute;
-    left: 3em;
+    left: var(--x);
     bottom: -2.3em;
     transition: .4s;
     &.offR {
