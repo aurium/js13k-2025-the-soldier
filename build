@@ -6,9 +6,9 @@ mkdir dist
 test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 
 (
-  echo 'const G = window'
-  grep -hv '^\s*import ' util.js base.js text.js journal.js objects.js game.js |
-  sed -r 's/^\s*export //; s/window\./G./g' |
+  echo 'const G = globalThis'
+  grep -hv '^\s*import ' util.js base.js text.js journal.js people.js game.js |
+  sed -r 's/^\s*export //; s/globalThis\./G./g' |
   sed -r "s/\blog\(/$LOG_FN(/g"
 ) |
 terser --compress \
@@ -21,7 +21,7 @@ while read line; do
   if (echo "$line" | grep -q '<link rel="stylesheet".*'); then
     echo ">> Building CSS..." >&2
     echo '<style>'
-    cat text.css journal.css game.css | minify --css
+    cat text.css journal.css people.css game.css | minify --css
     echo '</style>'
   # elif (echo "$line" | grep -q '<script.*</script>'); then
   #   echo ">> Building JS..." >&2

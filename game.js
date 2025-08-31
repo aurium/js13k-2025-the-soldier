@@ -1,6 +1,6 @@
 import { mkEl } from './util.js'
-import { body, canvas, updateCam, getGunTarget } from './base.js'
-import { objects, mkPerson } from './objects.js'
+import { body, canvas, updateCam, getGunTarget, objects } from './base.js'
+import { mkPerson } from './people.js'
 import { speak } from './text.js'
 import { mkNews } from './journal.js'
 
@@ -14,9 +14,9 @@ function updateWinSize() {
   winH = body.clientHeight
   canvasH = winW * .4
   canvasTop = (winH - canvasH) / 2
-  window.em = winW / 100
+  globalThis.em = winW / 100
 }
-window.addEventListener('resize', updateWinSize)
+globalThis.addEventListener('resize', updateWinSize)
 updateWinSize()
 
 const player = mkPerson(0,0, {
