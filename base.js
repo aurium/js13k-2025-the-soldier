@@ -1,6 +1,7 @@
 import { mkEl } from './util.js'
 
 export const objects = []
+export const bullets = []
 
 globalThis.camX=0
 globalThis.camY=0
@@ -9,12 +10,10 @@ let gunTargetX, gunTargetY=99
 
 export const body = globalThis.document?.body
 
-export const canvas = mkEl(
-  'div',
-  { id: 'canvas' },
-  mkEl('div', { id: 'canvas-box' }, body)
-)
+export const canvasBox = mkEl('div', { id: 'canvas-box' }, body)
+export const canvas = mkEl('div', { id: 'canvas' }, canvasBox)
 
+// TODO: Cam should enlarge the view to the target side, not to the velocity vector.
 export function updateCam(objTarget) {
   const m = 40
   moveCam(
@@ -47,3 +46,13 @@ body?.addEventListener('pointermove', ev => {
   mousePageY = ev.pageY
   updateTarget()
 })
+
+export function fireBullet(p) {
+  const bullet = mkEl('o', {}, canvas)
+  bullet.p = p
+  bullet.vx = Math.cos(p.gun.a)
+  bullet.vy = -Math.sin(p.gun.a)
+  bullet.x = p.x + p.w/2 + bullet.vx*3
+  bullet.y = p.y + p.h/2 + bullet.vy*3
+  bullets.push(bullet)
+}

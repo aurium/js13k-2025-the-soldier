@@ -21,7 +21,7 @@ while read line; do
   if (echo "$line" | grep -q '<link rel="stylesheet".*'); then
     echo ">> Building CSS..." >&2
     echo '<style>'
-    cat text.css journal.css people.css game.css | minify --css
+    cat game.css text.css journal.css people.css | minify --css
     echo '</style>'
   # elif (echo "$line" | grep -q '<script.*</script>'); then
   #   echo ">> Building JS..." >&2

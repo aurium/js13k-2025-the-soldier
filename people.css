@@ -1,0 +1,246 @@
+.person {
+  width: 3em;
+  height: 5em;
+  background: red;
+  --skin: hsl(from rgba(220,170,150) h s calc(l * (var(--rnd0) + .2)));
+  /* blue to magenta cloths */
+  --cloth: hsl(calc(var(--rnd1) * 210deg + 175deg) 70% calc((var(--rnd2) + .5)/2 * 100%));
+  &.rnd1-1 {
+    /* yellow cloth */
+    --cloth: hsl(60 90 calc((var(--rnd2) + .8)/2 * 100%));
+  }
+  &.they {
+    /* red to yellow to green cloths */
+    --cloth: hsl(calc(var(--rnd1) * 80deg) 70% calc((var(--rnd2) + .5)/2 * 100%));
+  }
+  &.c { /* class "c" means child */
+    transform: scale(.5);
+  }
+  h {
+    width: 3em;
+    height: 3em;
+    bottom: 2em;
+    background: var(--skin);
+    &::before { /* eye */
+      content: "";
+      position: absolute;
+      background: #111;
+      width: .6em;
+      height: .6em;
+      border-radius: .3em;
+      left: 2.2em;
+      bottom: 1.2em;
+      animation: calc(4s + 2s * var(--rnd3)) calc(4s * var(--rnd3)) linear infinite blink;
+    }
+    .news &::before {
+      animation: none; /* remove blink on newspaper */
+    }
+    .c &::before { /* child eye */
+      height: .9em;
+      bottom: 1em;
+    }
+    :is(.rnd0-1,.rnd0-2,.rnd0-3) &::before {
+      background: hsl(30 90 calc(5% + var(--rnd0)/4 * 100%)) /* brown eye */
+    }
+    .rnd0-4 &::before {
+      background: hsl(calc(120deg + var(--rnd3) * 90deg) 90 40) /* green and blue eye */
+    }
+  }
+  w {
+    width: 1.5em;
+    height: 2em;
+    top: 0em;
+    background: rgb(
+      calc( 16 + pow(var(--rnd0), 2) * (var(--rnd4) + var(--rnd5)) * 150 ),
+      calc( 16 + pow(var(--rnd0), 2) * min(var(--rnd4), var(--rnd5)) * 260 ),
+      calc( 16 + pow(var(--rnd0), 2) * min(var(--rnd4), var(--rnd5)) * 150 )
+    );
+    .fem & {
+      width: 2em;
+      height: 4em;
+    }
+  }
+  &.rnd2-5:not(.c) w { /* Class "rnd2 = 5" AND var "rnd7>.6" means "Old Person" */
+    background: hsl(0 0 calc(5% + pow(var(--rnd7),2) * 90%));
+  }
+  w::before {
+    content: "";
+    position: absolute;
+    background: inherit;
+    width: 3em;
+    height: 1em;
+    top: 0em;
+  }
+  &.they:not(.fem) w::before {
+    background: linear-gradient(calc((var(--rnd6) - .5) * 16deg), #DDD 40%, #555 50%, #DDD 55%);
+    border-bottom: 2px solid #333;
+  }
+  &.they.fem:not(.c) w::after {
+    content: "";
+    background: linear-gradient(45deg, transparent,
+      #000, transparent, #000, transparent
+    ), linear-gradient(-45deg, transparent,
+      #000, transparent, #000, transparent
+    );
+    background-size: 15% 15%;
+    opacity: .55;
+    position: absolute;
+    width: 3em;
+    height: 3.5em;
+    top: 0em;
+  }
+  b {
+    width: 3em;
+    height: 2em;
+    bottom: 0em;
+    background: var(--cloth);
+    .fem:not(.c) > &::before {
+      content: "";
+      position: absolute;
+      width: .8em;
+      height: .8em;
+      border-radius: .4em;
+      right: -.4em;
+      top: .1em;
+      background: inherit;
+    }
+  }
+  a {
+    width: .8em;
+    height: 1.6em;
+    left: 1.2em;
+    bottom: .2em;
+    background: var(--skin);
+  }
+  >f {
+    width: 1.2em;
+    height: .5em;
+    top: 5em;
+    left: .3em;
+    background: hsl(from var(--cloth) h calc(s / 2) calc(l * (var(--rnd6)/2 + .3)));
+    &::before {
+      content: "";
+      position: absolute;
+      width: 1.2em;
+      height: .5em;
+      left: 1.2em;
+      background: inherit;
+    }
+  }
+  &.walk {
+    >a { animation: .8s linear infinite arm-walk }
+    >f { animation: .4s linear infinite leg-walk }
+    f::before { animation: .4s .2s linear infinite leg-walk }
+    .news & { /* Stop walk animation on the newspaper */
+      >a { animation: 9999s linear infinite arm-walk }
+      >f, >f::before { animation: none }
+    }
+  }
+  &:not(.s) svg { /* Gun */
+    display: none; /* only soldier have gun */
+  }
+}
+
+.person.s { /* Soldier */
+  w::before {
+    background: #050;
+    width: 3.4em;
+    height: 1.3em;
+    top: -.2em;
+    left: -.2em;
+    border-radius: .9em .9em 0 0;
+  }
+  b {
+    background:
+    radial-gradient(at  .3em .4em, #040 .5em, transparent .5em),
+    radial-gradient(at 2.5em .5em, #040 .3em, transparent .3em),
+    radial-gradient(at  .5em calc(1em + var(--rnd1) * .5em), #040 .5em, transparent .5em),
+    radial-gradient(at 2.2em calc(1em + var(--rnd2) * .5em), #040 .5em, transparent .5em);
+    background-color: #050;
+    background-size: 5em 2em;
+  }
+  >a {
+    display: none;
+  }
+  f {
+    background: #030;
+  }
+  svg { /* Gun */
+    position: absolute;
+    left: -3em;
+    bottom: 1em;
+    width: 9em;
+    height: 3em;
+  }
+  g {
+    /* background: rgba(255,0,0,.4); */
+    left: -3.5em;
+    bottom: 1em;
+    width: 10em;
+    height: 3em;
+    /*
+      <circle cx="90%" cy="48%" r="10%" fill="#F40"/>
+      <rect x="45%" y="40%" width="45%" height="16%" fill="#111"/>
+      <rect x="45%" y="40%" width="30%" height="30%" fill="#111"/>
+      <rect x="52%" y="50%" width="10%" height="50%" fill="#111"/>
+      <rect x="40%" y="60%" width="17%" height="27%" fill="var(--skin)"/>
+    */
+    * {
+      left: auto;
+      bottom: auto;
+    }
+    f {
+      top: .75em;
+      right: 0;
+      width: 1.4em;
+      height: 1.4em;
+      border-radius: 1em;
+      background: #F40;
+    }
+    g1 {
+      top: 1.2em;
+      right: 1em;
+      width: 4em;
+      height: .5em;
+      background: #111;
+    }
+    g2 {
+      top: 1.1em;
+      right: 2em;
+      width: 3em;
+      height: 1em;
+      background: #111;
+    }
+    g3 {
+      top: 2em;
+      right: 3em;
+      width: 1em;
+      height: 1.2em;
+      background: #111;
+    }
+    a {
+      top: 2em;
+      right: 3.5em;
+      width: 1.8em;
+      height: .8em;
+      background: var(--skin);
+    }
+  }
+}
+
+@keyframes blink {
+  0% { transform: scale(1, 1) }
+  94% { transform: scale(1, 1) }
+  96% { transform: scale(1, .3) }
+  100% { transform: scale(1, 1) }
+}
+@keyframes arm-walk {
+  0% { transform: translateX(.5em) rotate(-20deg) }
+  50% { transform: translateX(-.5em) rotate(20deg) }
+  100% { transform: translateX(.5em) rotate(-20deg) }
+}
+@keyframes leg-walk {
+  0% { height: .5em }
+  50% { height: 0 }
+  100% { height: .5em }
+}

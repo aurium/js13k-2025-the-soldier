@@ -11,6 +11,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  user-select: none;
   * {
     box-sizing: border-box;
     margin: 0;
@@ -40,21 +41,14 @@ body {
   }
 }
 
-@keyframes blink {
-  0% { transform: scale(1, 1) }
-  94% { transform: scale(1, 1) }
-  96% { transform: scale(1, .3) }
-  100% { transform: scale(1, 1) }
-}
-@keyframes arm-walk {
-  0% { transform: translateX(.5em) rotate(-20deg) }
-  50% { transform: translateX(-.5em) rotate(20deg) }
-  100% { transform: translateX(.5em) rotate(-20deg) }
-}
-@keyframes leg-walk {
-  0% { height: .5em }
-  50% { height: 0 }
-  100% { height: .5em }
+#canvas > o { /* Bullet */
+  width: .4em;
+  height: .4em;
+  bottom: 9999em;
+  margin: 0 0 -.2em -.2em;
+  border-radius: 50%;
+  background: #111;
+  z-index: 8000;
 }
 
 #target {
@@ -88,145 +82,5 @@ body {
     border: .4em solid #000;
     background: rgba(255,255,255,.3);
     border-radius: 2em;
-  }
-}
-
-.person {
-  width: 3em;
-  height: 5em;
-  background: red;
-  --skin: hsl(from rgba(220,170,150) h s calc(l * (var(--rnd0) + .2)));
-  /* blue to magenta cloths */
-  --cloth: hsl(calc(var(--rnd1) * 210deg + 175deg) 70% calc((var(--rnd2) + .5)/2 * 100%));
-  &.rnd1-1 {
-    /* yellow cloth */
-    --cloth: hsl(60 90 calc((var(--rnd2) + .8)/2 * 100%));
-  }
-  &.they {
-    /* red to yellow to green cloths */
-    --cloth: hsl(calc(var(--rnd1) * 80deg) 70% calc((var(--rnd2) + .5)/2 * 100%));
-  }
-  &.child {
-    transform: scale(.5);
-  }
-  h {
-    width: 3em;
-    height: 3em;
-    bottom: 2em;
-    background: var(--skin);
-    &::before { /* eye */
-      content: "";
-      position: absolute;
-      background: #111;
-      width: .6em;
-      height: .6em;
-      border-radius: .3em;
-      left: 2.2em;
-      bottom: 1.2em;
-      animation: calc(4s + 2s * var(--rnd3)) calc(4s * var(--rnd3)) linear infinite blink;
-    }
-    .news &::before {
-      animation: none; /* remove blink on newspaper */
-    }
-    .child &::before { /* child eye */
-      height: .9em;
-      bottom: 1em;
-    }
-    :is(.rnd0-1,.rnd0-2,.rnd0-3) &::before {
-      background: hsl(30 90 calc(5% + var(--rnd0)/4 * 100%)) /* brown eye */
-    }
-    .rnd0-4 &::before {
-      background: hsl(calc(120deg + var(--rnd3) * 90deg) 90 40) /* green and blue eye */
-    }
-  }
-  w {
-    width: 1.5em;
-    height: 2em;
-    top: 0em;
-    background: rgb(
-      calc( 16 + pow(var(--rnd0), 2) * (var(--rnd4) + var(--rnd5)) * 150 ),
-      calc( 16 + pow(var(--rnd0), 2) * min(var(--rnd4), var(--rnd5)) * 260 ),
-      calc( 16 + pow(var(--rnd0), 2) * min(var(--rnd4), var(--rnd5)) * 150 )
-    );
-    .fem & {
-      width: 2em;
-      height: 4em;
-    }
-  }
-  &.rnd2-5:not(.child) w { /* Class "rnd2 = 5" AND var "rnd7>.6" means "Old Person" */
-    background: hsl(0 0 calc(5% + pow(var(--rnd7),2) * 90%));
-  }
-  w::before {
-    content: "";
-    position: absolute;
-    background: inherit;
-    width: 3em;
-    height: 1em;
-    top: 0em;
-  }
-  &.they:not(.fem) w::before {
-    background: linear-gradient(calc((var(--rnd6) - .5) * 16deg), #DDD 40%, #555 50%, #DDD 55%);
-    border-bottom: 2px solid #333;
-  }
-  &.they.fem:not(.child) w::after {
-    content: "";
-    background: linear-gradient(45deg, transparent,
-      #000, transparent, #000, transparent
-    ), linear-gradient(-45deg, transparent,
-      #000, transparent, #000, transparent
-    );
-    background-size: 15% 15%;
-    opacity: .55;
-    position: absolute;
-    width: 3em;
-    height: 3.5em;
-    top: 0em;
-  }
-  b {
-    width: 3em;
-    height: 2em;
-    bottom: 0em;
-    background: var(--cloth);
-    .fem:not(.child) > &::before {
-      content: "";
-      position: absolute;
-      width: .8em;
-      height: .8em;
-      border-radius: .4em;
-      right: -.4em;
-      top: .1em;
-      background: inherit;
-    }
-  }
-  a {
-    width: .8em;
-    height: 1.6em;
-    left: 1.2em;
-    bottom: .2em;
-    background: var(--skin);
-  }
-  f {
-    width: 1.2em;
-    height: .5em;
-    top: 5em;
-    left: .3em;
-    background: hsl(from var(--cloth) h calc(s / 2) calc(l * (var(--rnd6)/2 + .3)));
-    &::before {
-      content: "";
-      position: absolute;
-      width: 1.2em;
-      height: .5em;
-      left: 1.2em;
-      background: inherit;
-    }
-  }
-  &.walk {
-    a { animation: .8s linear infinite arm-walk }
-    f { animation: .4s linear infinite leg-walk }
-    f::before { animation: .4s .2s linear infinite leg-walk }
-    .news & { /* Stop walk animation on the newspaper */
-      a { animation: 9999s linear infinite arm-walk }
-      f, f::before { animation: none }
-    }
   }
 }
