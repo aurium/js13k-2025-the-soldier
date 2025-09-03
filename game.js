@@ -4,7 +4,6 @@ import { mkPerson } from './people.js'
 import { speak } from './text.js'
 import { mkNews } from './journal.js'
 
-let mousePageX, mousePageY
 let winW, winH, canvasTop, canvasH
 
 const fpsEl = mkEl('code', { style: 'position:absolute; bottom:.5em' }, body)
@@ -19,18 +18,13 @@ function updateWinSize() {
 globalThis.addEventListener('resize', updateWinSize)
 updateWinSize()
 
-const player = mkPerson(0,0, {
+const player = globalThis.p = mkPerson(0,0, {
   we: 1,
   //c: 1,
   s: 1, // is a soldier
   rnd:[.8, .85, .35, 0, 0, 0],
   rndC: Array(9).fill(0)
 })
-// mkPerson(0,0, {
-//   we: 1, child: 1,
-//   rnd:[.8, .85, .35, 0, 0, 0],
-//   rndC: Array(9).fill(0)
-// })
 
 const testP = mkPerson(15, 0, {
   we: 1, turn: -1,
@@ -80,7 +74,7 @@ setInterval(()=> {
     obj.update()
   }
   updateCam(player)
-}, 33)
+}, 20)
 
 function updatePlayerGun() {
   const target = getGunTarget()
