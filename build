@@ -5,6 +5,8 @@ mkdir dist
 
 test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 
+cd src
+
 (
   echo 'const G = globalThis'
   grep -hv '^\s*import ' util.js base.js text.js journal.js people.js game.js |
@@ -13,7 +15,7 @@ test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 ) |
 terser --compress \
        --mangle toplevel \
-       --output dist/app.js \
+       --output ../dist/app.js \
        --source-map includeSources,url=app.js.map \
 
 cat index.html |
@@ -26,28 +28,27 @@ while read line; do
   # elif (echo "$line" | grep -q '<script.*</script>'); then
   #   echo ">> Building JS..." >&2
   #   echo '<script type="module">'
-  #   egrep -v '^//#' dist/app.min.js
-  #   #cat dist/app.min.js | sed 's/;/;\n/g'
+  #   egrep -v '^//#' ../dist/app.min.js
+  #   #cat ../dist/app.min.js | sed 's/;/;\n/g'
   #   #echo -e '\n//# sourceURL=app.min.js</script>'
   #   echo -e '</script>'
   else
     echo "$line" | sed 's/game.js/app.js/'
   fi
-done > dist/index.html
+done > ../dist/index.html
 
-#rm dist/app.min.js
+#rm ../dist/app.min.js
 
-du -sh dist
+du -sh ../dist
 
 echo ">> Packing..." >&2
 
 ZIP_PACK="/tmp/${npm_package_name}_$(date +%F_%T).zip"
 
-cd dist
+cd ../dist
 mv app.js.map ../
 zip -9 -r "$ZIP_PACK" *
-cd ..
-mv app.js.map dist/
+mv ../app.js.map ./
 
 zip_size=$(du -b "$ZIP_PACK" | sed 's/\t.*//')
 
