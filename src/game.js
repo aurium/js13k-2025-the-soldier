@@ -32,7 +32,7 @@ const testP = mkPerson(15, 0, {
   rndC: [1,1,5] // rndC[2] == 5 means Old Person
 })
 
-speak(testP, 'This is a test.\nDid you like that?')
+speak(testP, 'This is a test.\nDid you like that?', {s:1})
 
 for (let x = -37; x <= 38; x+=5) for (let y = -10; y <= 14; y+=7) {
   mkPerson(x, y, {

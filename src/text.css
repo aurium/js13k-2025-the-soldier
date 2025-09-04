@@ -5,12 +5,12 @@
   white-space: pre;
   padding: .5em 1em;
   z-index: 8000;
-  transition: .4s;
+  transition: .1s;
   .news & { display: none /* hide it inside newspaper */ }
   > p {
     position: static;
     display: block;
-    font-size: 1.5rem;
+    font-size: var(--s);
   }
   > i { /* the ballom arrow */
     width: 0;
