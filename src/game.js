@@ -36,7 +36,7 @@ speak(testP, 'This is a test.\nDid you like that?', {s:1})
 
 for (let x = -37; x <= 38; x+=5) for (let y = -10; y <= 14; y+=7) {
   mkPerson(x, y, {
-    we: x<0,
+    we: x<0, s:y%2==0,
     fem: (x+y)%2==0,
     c: y<0,
   })

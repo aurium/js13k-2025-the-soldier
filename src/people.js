@@ -46,7 +46,7 @@ export function mkPerson(x, y, opts={}) {
   //   '<rect x="40%" y="60%" width="17%" height="27%" fill="var(--skin)"/>'
   // gun.f = gun.firstChild // Fire
   const gun = mkEl('g', {}, p)
-  gun.a = 0
+  gun.a = .5
   gun.l = 0
   gun.f = mkEl('f', {}, gun)
   mkEl('g1', {}, gun)
@@ -84,7 +84,7 @@ export function mkPerson(x, y, opts={}) {
 
 function updateGun(p) {
   const angle = (p.turn == -1) ? p.gun.a*-1 + Math.PI : p.gun.a
-  p.gun.style.transform = `rotate(${angle}rad)`
+  p.gun.style.transform = `scale(${p.c?.9:1},${p.c?1.2:1}) rotate(${angle}rad)`
   if (p.gun.t && p.gun.l < (Date.now()-200)) {
     p.gun.l = Date.now()
     p.gun.f.style.opacity = 1
