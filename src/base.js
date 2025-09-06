@@ -1,7 +1,14 @@
 import { mkEl } from './util.js'
 
-export const objects = []
-export const bullets = []
+export const objects = {}
+export const getObjsArr = ()=> Object.values(objects)
+
+const bullets = {}
+export const getBulletsArr = ()=> Object.values(bullets)
+export const removeBullet = (b)=> {
+  b.remove()
+  delete bullets[b.id]
+}
 
 export const body = globalThis.document?.body
 
@@ -63,10 +70,12 @@ body?.addEventListener('pointermove', ev => {
 
 export function fireBullet(p) {
   const bullet = mkEl('o', {}, canvas)
+  bullet.t = Date.now()
+  bullet.id = p.id + bullet.t
   bullet.p = p
   bullet.vx = Math.cos(p.gun.a)
   bullet.vy = -Math.sin(p.gun.a)
   bullet.x = p.x + p.w/2 + bullet.vx*3
   bullet.y = p.y + p.h/2 + bullet.vy*3
-  bullets.push(bullet)
+  bullets[bullet.id] = bullet
 }

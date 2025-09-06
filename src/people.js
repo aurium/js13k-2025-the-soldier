@@ -1,4 +1,4 @@
-import { objects, fireBullet } from './base.js'
+import { objects, getObjsArr, fireBullet, getBulletsArr, removeBullet } from './base.js'
 
 /**
  * @typedef PersonOpts
@@ -32,6 +32,7 @@ export function mkPerson(x, y, opts={}) {
   const wig = mkEl('w', 0, head)
   mkEl('a', 0, p) // arm
   mkEl('f', 0, p) // foot
+  const bleed = mkEl('bl', {}, p)
   // const gun = globalThis.document?.createElementNS('http://www.w3.org/2000/svg', 'svg')
   // p.appendChild(gun)
   // gun.setAttribute('width', '100%')
@@ -62,23 +63,38 @@ export function mkPerson(x, y, opts={}) {
       obj.x += obj.vx
       obj.y += obj.vy
       let rebound;
-      if (testBulletHit(obj)) {
+      let bulletHit
+      if (bulletHit = testBulletHit(obj)) {
         // Bad thing must happen
+        if (obj.p) {
+          //bleed(obj, bulletHit.x-obj.x, bulletHit.y-obj.y)
+          bleed.style.bottom = (bulletHit.y-obj.y + obj.h/2)/2 + 'em'
+          delete objects[obj.id]
+          obj.die = 1
+          obj.classList.add('die')
+          p.style.transition = '1s'
+        }
       }
       if (rebound = testColisionAgainstAllOtherObjects(obj)) {
         obj.x += rebound.x*1.5
         obj.y += rebound.y*1.5
       }
+      if (obj.act) obj.act(obj)
+      else {
+        if (obj != globalThis.p) personAct(obj)
+      }
       if (obj.s) updateGun(obj)
+      if (obj.vx || obj.vy) obj.classList.add('walk')
+      else obj.classList.remove('walk')
       p.style.left = obj.x+'em'
       p.style.bottom = obj.y+'em'
       const child = opts.c ? `translate(-.6em,1.2em) scale(.666,.5)` : ''
-      p.style.transform = `${child} scaleX(${obj.turn})`
+      p.style.transform = `${obj.die?'rotate(-90deg)':''}${child}scaleX(${obj.turn})`
       p.style.zIndex = Math.round(2000-obj.y)
     },
     get isOld() { return opts.rndC[2] == 5 && opts.rnd[7] > .6 }
   }, opts)
-  objects.push(obj)
+  objects[obj.id] = obj
   return obj
 }
 
@@ -94,8 +110,33 @@ function updateGun(p) {
   }
 }
 
+function personAct(p) {
+  if (p.s) return soldierAct(p)
+}
+
+function soldierAct(p) {
+  //const FIRST = getObjsArr().filter(o=>o.s)[1].id
+  if (!objects[p.targ?.id]) p.targ = null
+  if (!p.targ) { // Must select a target
+    p.targ = getObjsArr().filter(o => o.we != p.we).sort(()=>Math.random()<.5?-1:1)[0]
+  }
+  if (!p.targ) {
+    p.gun.t = 0
+    p.gun.a = (p.gun.a*8 + 1) / 9
+  } else {
+    const gunY = p.y + p.h/2
+    let angle = Math.atan2(gunY-p.targ.y, p.targ.x-p.x)
+    //if (p.id == FIRST) console.log(p.id, p.targ.id, angle)
+    p.gun.a = (p.gun.a*8 + angle) / 9
+    if ((p.gun.a - angle) ** 2 < .1) {
+      p.gun.t = 1
+    }
+  }
+  p.turn = (p.gun.a > 1.57 || p.gun.a < -1.57) ? -1 : 1
+}
+
 function testColisionAgainstAllOtherObjects(obj) {
-  for (const other of objects) {
+  for (const other of getObjsArr()) {
     if (other !== obj) {
       const rebound = testObjsColision(obj, other)
       if (rebound && other.p) return { x: rebound.x/2, y: rebound.y/2 }
@@ -139,4 +180,13 @@ export function testObjsColision(obj, other) {
 }
 
 function testBulletHit(obj) {
+  for (const b of getBulletsArr()) {
+    if (
+      b.x > obj.x && b.x < (obj.x+obj.w) &&
+      b.y > obj.y && b.y < (obj.y+obj.h)
+    ) {
+      removeBullet(b)
+      return b
+    }
+  }
 }

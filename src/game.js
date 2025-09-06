@@ -1,5 +1,5 @@
 import { mkEl } from './util.js'
-import { body, canvasBox, updateCam, getGunTarget, objects, bullets } from './base.js'
+import { body, canvasBox, updateCam, getGunTarget, getObjsArr, getBulletsArr, removeBullet } from './base.js'
 import { mkPerson } from './people.js'
 import { speak } from './text.js'
 import { mkNews } from './journal.js'
@@ -19,6 +19,7 @@ globalThis.addEventListener('resize', updateWinSize)
 updateWinSize()
 
 const player = globalThis.p = mkPerson(0,0, {
+  id: 'player',
   we: 1,
   //c: 1,
   s: 1, // is a soldier
@@ -29,7 +30,10 @@ const player = globalThis.p = mkPerson(0,0, {
 const testP = mkPerson(15, 0, {
   we: 1, turn: -1,
   rnd: [.5,.1,.2,.3,.4,.5,.6, .6], // rnd[7] > .6 means White Hair
-  rndC: [1,1,5] // rndC[2] == 5 means Old Person
+  rndC: [1,1,5], // rndC[2] == 5 means Old Person
+  act(p) {
+    p.vx = .1
+  }
 })
 
 speak(testP, 'This is a test.\nDid you like that?', {s:1})
@@ -54,11 +58,12 @@ setInterval(()=> {
     fpsEl.textContent = 'FPS: '+(10000 / (Date.now() - lastTicCheckpoint)).toFixed(1)
     lastTicCheckpoint = Date.now()
   }
-  for (const bullet of bullets) { // Update Bullets
+  for (const bullet of getBulletsArr()) { // Update Bullets
     bullet.x += bullet.vx*2
     bullet.y += bullet.vy*2
     bullet.style.left = bullet.x+'em'
     bullet.style.bottom = bullet.y+'em'
+    if (Date.now()-bullet.t > 3000) removeBullet(bullet)
   }
   player.turn = (getGunTarget().x < (player.x+1.5)) ? -1 : 1
   updatePlayerGun()
@@ -68,9 +73,7 @@ setInterval(()=> {
     player.vx *= .707
     player.vy *= .707
   }
-  if (player.vx || player.vy) player.classList.add('walk')
-  else player.classList.remove('walk')
-  for (const obj of objects) {
+  for (const obj of getObjsArr()) {
     obj.update()
   }
   updateCam(player)
@@ -98,7 +101,6 @@ function updateKeypressed(key, toggle) {
   if (key == 'arrowright' || key == 'd') keyRight = toggle
   if (key == 'arrowup'    || key == 'w')    keyUp = toggle
   if (key == 'arrowdown'  || key == 's')  keyDown = toggle
-  console.log(key==' ')
   if (toggle && key == ' ') mkNews(player, 'Some hard strong title', `
     This is the news body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae ante consequat, cursus tellus ac, ultrices nibh.
 

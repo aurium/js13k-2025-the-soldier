@@ -110,7 +110,7 @@
       background: inherit;
     }
   }
-  a {
+  >a {
     width: .8em;
     height: 1.6em;
     left: 1.2em;
@@ -141,8 +141,24 @@
       >f, >f::before { animation: none }
     }
   }
-  &:not(.s) svg { /* Gun */
-    display: none; /* only soldier have gun */
+  bl { /* Bleed */
+    width: 2.4em;
+    height: 2.4em;
+    left: .3em;
+    margin-bottom: -1.2em;
+    border-radius: 1.2em;
+    background: #A00;
+    transform: scale(0);
+  }
+  &.die {
+    h::before { /* eye */
+      height: .3em;
+      animation: none;
+    }
+    bl { /* Bleed */
+      transform: scale(1);
+      transition: transform 5s;
+    }
   }
 }
 
