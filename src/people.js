@@ -64,7 +64,6 @@ export function mkPerson(x, y, opts={}) {
     update() {
       obj.x += obj.vx
       obj.y += obj.vy
-      let rebound;
       let bulletHit
       if (!obj.bless && (bulletHit = testBulletHit(obj))) { // Got a shot! Bad thing will happen.
         bleed.style.bottom = (bulletHit.y-obj.y + obj.h/2)/2 + 'em'
@@ -77,10 +76,9 @@ export function mkPerson(x, y, opts={}) {
         obj.classList.add('die')
         p.style.transition = 'cubic-bezier(0, 0, 1, .6) 1s'
       }
-      if (rebound = testColisionAgainstAllOtherObjects(obj)) {
-        obj.x += rebound.x*1.5
-        obj.y += rebound.y*1.5
-      }
+      const rebound = testColisionAgainstAllOtherObjects(obj)
+      obj.x += rebound.x//*1.5
+      obj.y += rebound.y//*1.5
       if (!obj.die && obj != globalThis.p) {
         if (obj.act) obj.act(obj)
         else personAct(obj)
@@ -94,7 +92,7 @@ export function mkPerson(x, y, opts={}) {
         `${opts.c?`translate(-.6em,1.2em)scale(${obj.die?'.5,.66':'.66,.5'})`:''}` +
         `${obj.die?`translate(${-obj.turn*obj.h/3}em,${obj.h/4}em)rotate(${-90*obj.turn}deg)`:''}` +
         `scaleX(${obj.turn})`
-      p.style.zIndex = Math.round(2000-obj.y)
+      p.style.zIndex = calcZIdx(obj.y)
     },
     get isOld() { return opts.rndC[2] == 5 && opts.rnd[7] > .6 }
   }, opts)
@@ -140,6 +138,7 @@ function soldierAct(p) {
 }
 
 function testColisionAgainstAllOtherObjects(obj) {
+  const resultRebound = { x:0, y:0 }
   for (const other of getObjsArr()) {
     if (other !== obj) {
       const rebound = testObjsColision(obj, other)
@@ -148,32 +147,61 @@ function testColisionAgainstAllOtherObjects(obj) {
           rebound.x /= 2
           rebound.y /= 2
         }
-        return rebound
+        resultRebound.x += rebound.x
+        resultRebound.y += rebound.y
       }
     }
   }
+  return resultRebound
 }
 
 export function testObjsColision(obj, other) {
   let rebound = null
-  if (other.tagName=='WALL') { // Object to Wall colision
-    if (
-      (other.skew==1 && (obj.x > other.x1 || obj.x < other.x2)) ||
-      (other.skew==-1 && (obj.x < other.x1 || obj.x > other.x2)) ||
-      obj.y < other.y1 || obj.y > other.y2
-    ) return rebound
-    const wallW = Math.abs(other.x2 - other.x1)
-    const wallH = other.y2 - other.y1
-    const relativeY = obj.y - other.y1
-    const relativeX = wallW * relativeY/wallH
-    const colisionX = other.skew==-1
-                    ? other.x1 + relativeX
-                    : other.x1 - relativeX - obj.w
-    console.log(obj.id, obj.x, wallW, relativeX, colisionX)
-    if (
-      (other.skew==1 && colisionX < obj.x) ||
-      (other.skew==-1 && colisionX > obj.x)
-    ) rebound = { x:colisionX-obj.x, y:0 }
+  if (other.wall){
+    if (other.dg) { // Object to Diagonal Wall colision
+      // skill == +1 == \
+      // skill == -1 == /
+      const objRight = obj.x + obj.w
+      if (
+        (other.skew==1 && (obj.x > other.x1 || objRight < other.x2)) ||
+        (other.skew==-1 && (obj.x < other.x1 || obj.x > other.x2)) ||
+        obj.y < other.y1 || obj.y > other.y2
+      ) return rebound
+      const wallW = Math.abs(other.x2 - other.x1)
+      const wallH = other.y2 - other.y1
+      const relativeY = obj.y - other.y1
+      const relativeX = wallW * relativeY/wallH
+      const colisionX = other.skew==-1
+                      ? other.x1 + relativeX
+                      : other.x1 - relativeX - obj.w
+      if (
+        (other.skew==1 && colisionX < obj.x) ||
+        (other.skew==-1 && colisionX > obj.x)
+      ) rebound = { x:colisionX-obj.x, y:0 }
+    }
+    if (other.v) { // Object to Vertical Wall colision
+      if ((obj.y+obj.d) < other.y1 || obj.y > (other.y2+.5)) return rebound
+      const objEast = obj.x + obj.w
+      const wallEast = other.x + other.w
+      if (obj.x < wallEast && obj.x > other.x) {
+        rebound = { y: 0, x: wallEast-obj.x }
+      }
+      if (objEast > other.x && objEast < wallEast) {
+        rebound = { y: 0, x: other.x-objEast }
+      }
+    }
+    if (other.h) { // Object to Horizontal Wall colision
+      if ((obj.x+obj.w) < other.x1 || obj.x > other.x2) return rebound
+      const objDeep = obj.y + .2 //+ obj.d
+      const objBottom = obj.y - .8
+      const wallNort = other.y + 1
+      if (objBottom < wallNort && objBottom > other.y) {
+        rebound = { x: 0, y: wallNort-objBottom }
+      }
+      if (objDeep > other.y && objDeep < wallNort) {
+        rebound = { x: 0, y: other.y-objDeep }
+      }
+    }
     return rebound
   }
   // 3D (parallelepiped) Objects colision

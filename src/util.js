@@ -13,3 +13,5 @@ export function mkEl(tag, attrs, parent) {
 }
 
 export const mkId = (prefix)=> prefix + String(Math.random()).split('.')[1]
+
+export const calcZIdx = (y)=> Math.round(2000-y*10)

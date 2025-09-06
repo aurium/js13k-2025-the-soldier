@@ -1,10 +1,16 @@
 import { speak } from './text.js'
 import { mkNews } from './journal.js'
 import { mkPerson } from './people.js'
-import { vWall } from '../buildings.js'
+import { hWall, vWall, dWall, mkBox } from '../buildings.js'
 
-vWall(-30,-10, -15,15)
-vWall(30,-10, 15,15)
+vWall(-20,-10,15)
+dWall(30,-10, 15,15, { c:'bric' })
+hWall(-20,15,15, { c:'bric' })
+hWall(-20,30,-10, { c:'bric' })
+
+hWall(-50,-50+3.5*6,10, { c:'tree' })
+
+mkBox(-30,-9,1,1,3)
 
 globalThis.p.bless = 1 // Makes the player imortal.
 
