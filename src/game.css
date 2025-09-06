@@ -22,7 +22,7 @@ body {
 #canvas-box {
   width: 100vw;
   height: 40vw;
-  background: #47A;
+  background: #444;
   position: relative;
   cursor: none; /* cursor: cell */
   overflow: hidden;

@@ -1,3 +1,6 @@
+/**
+ * @return {HTMLElement}
+ */
 export function mkEl(tag, attrs, parent) {
   if (!globalThis.document) return;
   const el = Object.assign(
@@ -8,3 +11,5 @@ export function mkEl(tag, attrs, parent) {
   if (parent) parent.appendChild(el)
   return el
 }
+
+export const mkId = (prefix)=> prefix + String(Math.random()).split('.')[1]

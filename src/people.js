@@ -1,4 +1,6 @@
 import { objects, getObjsArr, fireBullet, getBulletsArr, removeBullet } from './base.js'
+import { mkEl } from './util.js'
+import { canvas } from './base.js'
 
 /**
  * @typedef PersonOpts
@@ -18,7 +20,7 @@ import { objects, getObjsArr, fireBullet, getBulletsArr, removeBullet } from './
 export function mkPerson(x, y, opts={}) {
   opts.rnd ??= []
   opts.rndC ??= []
-  opts.id ??= 'o' + String(Math.random()).split('.')[1]
+  opts.id ??= mkId('p')
   const p = mkEl('p', {
     id: opts.id,
     className:
@@ -64,7 +66,7 @@ export function mkPerson(x, y, opts={}) {
       obj.y += obj.vy
       let rebound;
       let bulletHit
-      if (bulletHit = testBulletHit(obj)) { // Got a shot! Bad thing will happen.
+      if (!obj.bless && (bulletHit = testBulletHit(obj))) { // Got a shot! Bad thing will happen.
         bleed.style.bottom = (bulletHit.y-obj.y + obj.h/2)/2 + 'em'
         delete objects[obj.id]
         obj.die = 1
@@ -120,7 +122,7 @@ function soldierAct(p) {
   //const FIRST = getObjsArr().filter(o=>o.s)[1].id
   if (!objects[p.targ?.id]) p.targ = null
   if (!p.targ) { // Must select a target
-    p.targ = getObjsArr().filter(o => o.we != p.we).sort(()=>Math.random()<.5?-1:1)[0]
+    p.targ = getObjsArr().filter(o => o.p && o.we != p.we).sort(()=>Math.random()<.5?-1:1)[0]
   }
   if (!p.targ) {
     p.gun.t = 0
@@ -141,12 +143,40 @@ function testColisionAgainstAllOtherObjects(obj) {
   for (const other of getObjsArr()) {
     if (other !== obj) {
       const rebound = testObjsColision(obj, other)
-      if (rebound && other.p) return { x: rebound.x/2, y: rebound.y/2 }
+      if (rebound) {
+        if(other.p) {
+          rebound.x /= 2
+          rebound.y /= 2
+        }
+        return rebound
+      }
     }
   }
 }
 
 export function testObjsColision(obj, other) {
+  let rebound = null
+  if (other.tagName=='WALL') { // Object to Wall colision
+    if (
+      (other.skew==1 && (obj.x > other.x1 || obj.x < other.x2)) ||
+      (other.skew==-1 && (obj.x < other.x1 || obj.x > other.x2)) ||
+      obj.y < other.y1 || obj.y > other.y2
+    ) return rebound
+    const wallW = Math.abs(other.x2 - other.x1)
+    const wallH = other.y2 - other.y1
+    const relativeY = obj.y - other.y1
+    const relativeX = wallW * relativeY/wallH
+    const colisionX = other.skew==-1
+                    ? other.x1 + relativeX
+                    : other.x1 - relativeX - obj.w
+    console.log(obj.id, obj.x, wallW, relativeX, colisionX)
+    if (
+      (other.skew==1 && colisionX < obj.x) ||
+      (other.skew==-1 && colisionX > obj.x)
+    ) rebound = { x:colisionX-obj.x, y:0 }
+    return rebound
+  }
+  // 3D (parallelepiped) Objects colision
   const aW = obj.x, aE = obj.x + obj.w
   const aS = obj.y, aN = obj.y + obj.d
   const bW = other.x, bE = other.x + other.w
@@ -170,7 +200,7 @@ export function testObjsColision(obj, other) {
     }
 
     if (aVertOverlapFromTop || aVertOverlapFromBelow) { // has vertical hit
-      const rebound = { x:0 }
+      rebound = { x:0 }
       if (aVertOverlapFromTop) rebound.y = bN - aS
       else rebound.y = bS - aN
       if (aHorzFullOverlapOther || aHorzFullOverlaped) return rebound
