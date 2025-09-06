@@ -64,32 +64,34 @@ export function mkPerson(x, y, opts={}) {
       obj.y += obj.vy
       let rebound;
       let bulletHit
-      if (bulletHit = testBulletHit(obj)) {
-        // Bad thing must happen
-        if (obj.p) {
-          //bleed(obj, bulletHit.x-obj.x, bulletHit.y-obj.y)
-          bleed.style.bottom = (bulletHit.y-obj.y + obj.h/2)/2 + 'em'
-          delete objects[obj.id]
-          obj.die = 1
-          obj.classList.add('die')
-          p.style.transition = '1s'
-        }
+      if (bulletHit = testBulletHit(obj)) { // Got a shot! Bad thing will happen.
+        bleed.style.bottom = (bulletHit.y-obj.y + obj.h/2)/2 + 'em'
+        delete objects[obj.id]
+        obj.die = 1
+        obj.gun.t = 0
+        obj.gun.a = obj.turn > 0
+                  ? obj.gun.a > 0 ? 1.8 : -1.8
+                  : obj.gun.a > 0 ? 1.3 : -1.3
+        obj.classList.add('die')
+        p.style.transition = 'cubic-bezier(0, 0, 1, .6) 1s'
       }
       if (rebound = testColisionAgainstAllOtherObjects(obj)) {
         obj.x += rebound.x*1.5
         obj.y += rebound.y*1.5
       }
-      if (obj.act) obj.act(obj)
-      else {
-        if (obj != globalThis.p) personAct(obj)
+      if (!obj.die && obj != globalThis.p) {
+        if (obj.act) obj.act(obj)
+        else personAct(obj)
       }
       if (obj.s) updateGun(obj)
       if (obj.vx || obj.vy) obj.classList.add('walk')
       else obj.classList.remove('walk')
       p.style.left = obj.x+'em'
       p.style.bottom = obj.y+'em'
-      const child = opts.c ? `translate(-.6em,1.2em) scale(.666,.5)` : ''
-      p.style.transform = `${obj.die?'rotate(-90deg)':''}${child}scaleX(${obj.turn})`
+      p.style.transform =
+        `${opts.c?`translate(-.6em,1.2em)scale(${obj.die?'.5,.66':'.66,.5'})`:''}` +
+        `${obj.die?`translate(${-obj.turn*obj.h/3}em,${obj.h/4}em)rotate(${-90*obj.turn}deg)`:''}` +
+        `scaleX(${obj.turn})`
       p.style.zIndex = Math.round(2000-obj.y)
     },
     get isOld() { return opts.rndC[2] == 5 && opts.rnd[7] > .6 }

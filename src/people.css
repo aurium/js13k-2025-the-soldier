@@ -3,6 +3,7 @@
   height: 5em;
   border-radius: 1em;
   background: red;
+  filter: drop-shadow(0 0 .3em rgba(0,0,0,.8));
   --tu1: #DDD; --tu2: #555; /* Turban for they */
   --skin: hsl(from rgba(220,170,150) h s calc(l * (var(--rnd0) + .2)));
   /* blue to magenta cloths */
@@ -132,7 +133,7 @@
       background: inherit;
     }
   }
-  &.walk {
+  &:not(.die).walk {
     >a { animation: .8s linear infinite arm-walk }
     >f { animation: .4s linear infinite leg-walk }
     f::before { animation: .4s .2s linear infinite leg-walk }
@@ -148,16 +149,18 @@
     margin-bottom: -1.2em;
     border-radius: 1.2em;
     background: #A00;
-    transform: scale(0);
+    opacity: 0;
+    transform: scale(.3);
   }
   &.die {
     h::before { /* eye */
-      height: .3em;
+      height: .2em;
       animation: none;
     }
     bl { /* Bleed */
+      opacity: 1;
       transform: scale(1);
-      transition: transform 5s;
+      transition: transform 15s;
     }
   }
 }
@@ -182,7 +185,7 @@
     radial-gradient(at 2.2em calc(1em + var(--rnd2) * .5em), #040 .5em, transparent .5em);
     background-size: 5em 2em;
   }
-  f {
+  >f {
     background: #030;
   }
 }
@@ -204,7 +207,7 @@
     height: 3em;
     background: #333 linear-gradient(#333, #222 33%, #333 33%);
   }
-  f {
+  >f {
     background: #222;
   }
 }
