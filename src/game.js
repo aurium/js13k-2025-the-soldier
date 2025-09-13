@@ -1,7 +1,7 @@
 import { mkEl } from './util.js'
 import { body, canvasBox, updateCam, getGunTarget, getObjsArr, getBulletsArr, removeBullet } from './base.js'
 import { mkPerson } from './people.js'
-import './scenes/00-prologue.js'
+import { prologue } from './scenes/00-prologue.js'
 
 let winW, winH, canvasTop, canvasH
 
@@ -21,7 +21,7 @@ const player = globalThis.p = mkPerson(0,0, {
   id: 'player',
   we: 1,
   //c: 1,
-  s: 1, // is a soldier
+  s: 0, // 1 means soldier
   rnd:[.8, .85, .35, 0, 0, 0],
   rndC: Array(9).fill(0)
 })
@@ -38,7 +38,7 @@ setInterval(()=> {
     fpsEl.textContent = 'FPS: '+(10000 / (Date.now() - lastTicCheckpoint)).toFixed(1)
     lastTicCheckpoint = Date.now()
   }
-  globalThis.scene()
+  //globalThis.scene()
   for (const bullet of getBulletsArr()) { // Update Bullets
     bullet.x += bullet.vx*2
     bullet.y += bullet.vy*2
@@ -46,18 +46,20 @@ setInterval(()=> {
     bullet.style.bottom = bullet.y+'em'
     if (Date.now()-bullet.t > 3000) removeBullet(bullet)
   }
-  player.turn = (getGunTarget().x < (player.x+1.5)) ? -1 : 1
-  updatePlayerGun()
-  player.vx = (keyLeft ? -1 : keyRight ? 1 : 0) * playerVelocity
-  player.vy = (keyDown ? -1 : keyUp ? 1 : 0) * playerVelocity
-  if (player.vx && player.vy) {
-    player.vx *= .707
-    player.vy *= .707
+  if (enableCtrl) {
+    player.turn = (getGunTarget().x < (player.x+1.5)) ? -1 : 1
+    updatePlayerGun()
+    player.vx = (keyLeft ? -1 : keyRight ? 1 : 0) * playerVelocity
+    player.vy = (keyDown ? -1 : keyUp ? 1 : 0) * playerVelocity
+    if (player.vx && player.vy) {
+      player.vx *= .707
+      player.vy *= .707
+    }
   }
   for (const obj of getObjsArr()) {
     obj.update()
   }
-  updateCam(player)
+  updateCam(globalThis.camTo)
 }, 20)
 
 function updatePlayerGun() {
@@ -67,26 +69,12 @@ function updatePlayerGun() {
   player.gun.a = angle
 }
 
-
-// setTimeout(()=> {
-//   mkNews(player, 'Some hard strong tilte', `
-//     This is the news body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae ante consequat, cursus tellus ac, ultrices nibh.
-
-//     Suspendisse vel semper est, in mattis nibh. Ut in augue ante. Duis eleifend pellentesque purus. Integer aliquam faucibus magna, id suscipit ligula elementum quis. Proin tristique dictum quam, ac porttitor nibh lobortis id. Nullam vitae facilisis sem, id rutrum metus. Curabitur vel turpis non quam pharetra vehicula.
-//   `)
-// }, 3000)
-
 function updateKeypressed(key, toggle) {
   key = key.toLowerCase()
   if (key == 'arrowleft'  || key == 'a')  keyLeft = toggle
   if (key == 'arrowright' || key == 'd') keyRight = toggle
   if (key == 'arrowup'    || key == 'w')    keyUp = toggle
   if (key == 'arrowdown'  || key == 's')  keyDown = toggle
-  // if (toggle && key == ' ') mkNews(player, 'Some hard strong title', `
-  //   This is the news body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae ante consequat, cursus tellus ac, ultrices nibh.
-
-  //   Suspendisse vel semper est, in mattis nibh. Ut in augue ante. Duis eleifend pellentesque purus. Integer aliquam faucibus magna, id suscipit ligula elementum quis. Proin tristique dictum quam, ac porttitor nibh lobortis id. Nullam vitae facilisis sem, id rutrum metus. Curabitur vel turpis non quam pharetra vehicula.
-  // `)
 }
 
 body.addEventListener('keydown', ev => updateKeypressed(ev.key, 1))
@@ -99,3 +87,20 @@ canvasBox.addEventListener('pointerdown', ev => {
 body.addEventListener('pointerup', ev => {
   if (ev.button == 0) player.gun.t = 0 // Untriggered
 })
+
+globalThis.pDeadCb = ()=> { // Can be overridden in a scene and send to a hospital.
+  globalThis.pDeadCb = delta
+  player.classList.add('die')
+  player.act = delta
+  enableCtrl = 0
+  setTimeout(()=> {
+    mkNews(player,
+      `A Hero Dies`,
+      `Maybe he was not that great...`,
+    ).show()
+  }, 1500)
+}
+
+//// THE GAME STARTER ////////////////////////////////////////////
+prologue()
+//loader01()

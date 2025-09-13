@@ -30,7 +30,7 @@ export function vWall(x, y1,y2, opts = {}) {
     className: 'v '+opts.c,
     style: `left:${x}em;bottom:${(y1)}em;`
          + `width:${opts.w}em;`
-         + `height:${opts.d + 15}em;`
+         + `height:${opts.d + 12}em;`
          + `z-index:${calcZIdx(y1)}`,
     ...opts,
     x,y1,y2,
@@ -42,7 +42,7 @@ export function vWall(x, y1,y2, opts = {}) {
 /** Diagonal Wall */
 export function dWall(x1,y1, x2,y2, opts={}) {
   const skew = x1 < x2 ? -1 : 1
-  const width = Math.abs(x2 - x1)
+  const width = delta(x1, x2)
   opts.id ??= mkId('w')
   const wall = mkEl('wall', {
     update() { },
@@ -62,8 +62,12 @@ export function dWall(x1,y1, x2,y2, opts={}) {
 export function mkBox(x, y, w, d, h, opts = {}) {
   opts.id ??= mkId('b')
   const box = mkEl('box', {
+    style: `left:${x}em;bottom:${y}em;width:${w}em;height:${d+h}em`,
     update() { },
     ...opts
   }, canvas)
-  objects[box.id] = box
+  mkEl('div', {
+    style: `height:${h}em`
+  }, box)
+  return objects[box.id] = box
 }

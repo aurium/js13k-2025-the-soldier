@@ -1,0 +1,14 @@
+.prologue {
+  >rv { /* road vertical */
+    left: -60em;
+    bottom: -20em;
+    height: 60em;
+    transform: skewX(-45deg);
+  }
+  >gr { /* Grass */
+    left: -70em;
+    bottom: -40em;
+    width: 200em;
+    height: 120em;
+  }
+}

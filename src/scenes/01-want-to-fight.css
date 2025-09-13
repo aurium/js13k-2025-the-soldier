@@ -1,0 +1,21 @@
+.want {
+  >rv { /* road vertical */
+    left: -70em;
+    bottom: -50em;
+    width: 15em;
+    height: 150em;
+  }
+  >gr { /* floor */
+    left: -150em;
+    bottom: -50em;
+    width: 400em;
+    height: 150em;
+  }
+  >fl { /* floor */
+    background: #999;
+    left: -50em;
+    bottom: -20em;
+    width: 150em;
+    height: 35em;
+  }
+}

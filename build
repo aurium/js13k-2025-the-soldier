@@ -8,11 +8,12 @@ test x$NO_LOG = x1 && LOG_FN=void || LOG_FN=log
 cd src
 
 SCRIPTS="util.js base.js text.js journal.js buildings.js people.js game.js $(ls -1 scenes/*.js)"
+STYLES="base.css game.css text.css journal.css people.css buildings.css $(ls -1 scenes/*.css)"
 
 (
   echo 'const G = globalThis'
   grep -hv '^\s*import ' $SCRIPTS |
-  sed -r 's/^\s*export //; s/globalThis\./G./g' |
+  sed -r 's/^\s*export( default)? //; s/globalThis\./G./g' |
   sed -r "s/\blog\(/$LOG_FN(/g"
 ) |
 terser --compress \
@@ -25,7 +26,7 @@ while read line; do
   if (echo "$line" | grep -q '<link rel="stylesheet".*'); then
     echo ">> Building CSS..." >&2
     echo '<style>'
-    cat game.css text.css journal.css people.css buildings.css | minify --css
+    cat $STYLES | minify --css
     echo '</style>'
   # elif (echo "$line" | grep -q '<script.*</script>'); then
   #   echo ">> Building JS..." >&2

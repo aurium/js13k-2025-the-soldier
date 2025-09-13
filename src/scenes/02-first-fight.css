@@ -1,0 +1,8 @@
+.first {
+  >gr { /* floor */
+    left: -300em;
+    bottom: -300em;
+    width: 1200em;
+    height: 600em;
+  }
+}

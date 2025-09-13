@@ -8,9 +8,28 @@
   background: #C8C0B0;
   color: #433;
   font-family: serif;
-  overflow: auto;
+  overflow: hidden;
   z-index: 10;
   box-shadow: .5em .5em 2em rgba(0,0,0,.8);
+  transform: rotate(-15deg);
+  transition: 1s;
+  &.n2 {
+    left: 43vw;
+    transform: rotate(-7deg);
+  }
+  &.new {
+    top: -99vh;
+  }
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3em;
+    background: linear-gradient(#CCC0, #C8C0B0);
+  }
   h2 {
     font-size: 2.2em;
     margin: 0;
@@ -32,7 +51,7 @@
   }
   p {
     white-space: pre-wrap;
-    font-size: 1.4em;
+    font-size: 1.2em;
     text-align: justify;
   }
 }

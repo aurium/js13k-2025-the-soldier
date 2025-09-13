@@ -2,8 +2,7 @@
   width: 3em;
   height: 5em;
   border-radius: 1em;
-  background: red;
-  filter: drop-shadow(0 0 .3em rgba(0,0,0,.8));
+  background: #9007;
   --tu1: #DDD; --tu2: #555; /* Turban for they */
   --skin: hsl(from rgba(220,170,150) h s calc(l * (var(--rnd0) + .2)));
   /* blue to magenta cloths */

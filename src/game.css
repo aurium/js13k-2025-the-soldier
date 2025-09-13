@@ -1,32 +1,25 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: #111;
-  color: #EEE;
-  font-family: sans-serif;
-  font-size: 1vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  user-select: none;
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-}
-
 #canvas-box {
   width: 100vw;
   height: 40vw;
   background: #444;
   position: relative;
-  cursor: none; /* cursor: cell */
+  cursor: cell;
   overflow: hidden;
   z-index: 2;
+  .sOut & >* {
+    transform: translateY(-100vh);
+    transition: 1s 1s;
+    & *, & *::before {
+      transform: translateY(-50vh);
+      transition: 2s;
+    }
+  }
+  .sIn & >* {
+    transition: 2s;
+    & *, & *::before {
+      transition: 1s 1s;
+    }
+  }
 }
 
 :where(#canvas) {
@@ -38,6 +31,9 @@ body {
     left: 0;
     margin: 0;
     padding: 0;
+  }
+  >*:not(o) { /* All but bullets has shadow */
+    filter: drop-shadow(0 0 .3em #000c)
   }
 }
 
@@ -51,36 +47,39 @@ body {
   z-index: 8000;
 }
 
-#target {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: .2em;
-  height: 4em;
-  background: #000;
-  opacity: .8;
-  margin: 0 0 -2em -.1em;
-  z-index: 9000;
-  pointer-events: none;
-  .news & { display: none /* remove target from newspaper */ }
-  &::before {
-    content: "";
+#canvas-box:has(#player.s) {
+  cursor: none;
+  #target {
     position: absolute;
-    left: -1.9em;
-    bottom: 1.9em;
-    width: 4em;
-    height: .2em;
+    left: 0;
+    bottom: 0;
+    width: .2em;
+    height: 4em;
     background: #000;
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    left: -1.3em;
-    bottom: .6em;
-    width: 2em;
-    height: 2em;
-    border: .4em solid #000;
-    background: rgba(255,255,255,.3);
-    border-radius: 2em;
+    opacity: .8;
+    margin: 0 0 -2em -.1em;
+    z-index: 9000;
+    pointer-events: none;
+    .news & { display: none /* remove target from newspaper */ }
+    &::before {
+      content: "";
+      position: absolute;
+      left: -1.9em;
+      bottom: 1.9em;
+      width: 4em;
+      height: .2em;
+      background: #000;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      left: -1.3em;
+      bottom: .6em;
+      width: 2em;
+      height: 2em;
+      border: .4em solid #000;
+      background: rgba(255,255,255,.3);
+      border-radius: 2em;
+    }
   }
 }
