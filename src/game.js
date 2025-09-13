@@ -92,6 +92,7 @@ globalThis.pDeadCb = ()=> { // Can be overridden in a scene and send to a hospit
   globalThis.pDeadCb = delta
   player.classList.add('die')
   player.act = delta
+  player.v = player.vx = player.vy = 0
   enableCtrl = 0
   setTimeout(()=> {
     mkNews(player,
